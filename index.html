@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do List</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="container">
+
+        <h1>𝕄𝕪 𝕋𝕠-𝔻𝕠 𝕃𝕚𝕤𝕥</h1>
+        <p class="subtitle">Stay organized and productive 🚀</p>
+
+        <!-- Add Task -->
+        <div class="input-box">
+            <input type="text" id="taskInput" placeholder="Enter your task...">
+            <button onclick="addTask()">Add</button>
+        </div>
+
+        <!-- Search -->
+        <input
+            type="text"
+            id="searchInput"
+            class="search"
+            placeholder="Search task..."
+            oninput="searchTasks()"
+        >
+
+        <!-- Statistics -->
+        <div class="stats">
+            <div>
+                <span id="total">0</span>
+                <small><b>Total</b></small>
+            </div>
+
+            <div>
+                <span id="completed">0</span>
+                <small><b>Completed</b></small>
+            </div>
+
+            <div>
+                <span id="pending">0</span>
+                <small><b>Pending</b></small>
+            </div>
+        </div>
+
+        <!-- Task List -->
+        <ul id="taskList"></ul>
+
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
