@@ -1,142 +1,105 @@
 let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+let activeFilter = "all";
 
 const taskInput = document.getElementById("taskInput");
 const taskList = document.getElementById("taskList");
+const taskForm = document.getElementById("taskForm");
+const searchInput = document.getElementById("searchInput");
+const emptyState = document.getElementById("emptyState");
+
+document.getElementById("currentDate").textContent = new Intl.DateTimeFormat("en-US", {
+    weekday: "long", month: "long", day: "numeric"
+}).format(new Date());
+
+taskForm.addEventListener("submit", function (event) {
+    event.preventDefault();
+    addTask();
+});
+
+searchInput.addEventListener("input", renderTasks);
+document.querySelectorAll(".filter").forEach(function (button) {
+    button.addEventListener("click", function () {
+        activeFilter = button.dataset.filter;
+        document.querySelectorAll(".filter").forEach(function (item) {
+            item.classList.toggle("active", item === button);
+        });
+        document.getElementById("listLabel").textContent = activeFilter.toUpperCase() + " TASKS";
+        renderTasks();
+    });
+});
 
 function addTask() {
-
     const text = taskInput.value.trim();
-
-    if (text === "") {
-        alert("Please enter a task!");
-        return;
-    }
-
-    const task = {
-        id: Date.now(),
-        text: text,
-        completed: false
-    };
-
-    tasks.push(task);
-
+    if (!text) return;
+    tasks.push({ id: Date.now(), text: text, completed: false });
     saveTasks();
-    displayTasks();
-
+    renderTasks();
     taskInput.value = "";
+    taskInput.focus();
 }
 
-function displayTasks(filteredTasks = tasks) {
-
-    taskList.innerHTML = "";
-
-    filteredTasks.forEach(function(task) {
-
-        const li = document.createElement("li");
-
-        li.className = "task";
-
-        li.innerHTML = `
-            <input
-                type="checkbox"
-                class="check"
-                ${task.completed ? "checked" : ""}
-                onchange="toggleTask(${task.id})"
-            >
-
-            <span class="task-text ${task.completed ? "completed" : ""}">
-                ${task.text}
-            </span>
-
-            <button class="edit" onclick="editTask(${task.id})">
-                Edit
-            </button>
-
-            <button class="delete" onclick="deleteTask(${task.id})">
-                Delete
-            </button>
-        `;
-
-        taskList.appendChild(li);
+function renderTasks() {
+    const searchText = searchInput.value.trim().toLowerCase();
+    const filteredTasks = tasks.filter(function (task) {
+        const matchesFilter = activeFilter === "all" || (activeFilter === "completed" ? task.completed : !task.completed);
+        return matchesFilter && task.text.toLowerCase().includes(searchText);
     });
 
+    taskList.innerHTML = "";
+    filteredTasks.forEach(function (task, index) {
+        const item = document.getElementById("taskTemplate").content.firstElementChild.cloneNode(true);
+        const checkbox = item.querySelector(".check");
+        item.classList.toggle("done", task.completed);
+        item.style.animationDelay = `${index * 35}ms`;
+        checkbox.checked = task.completed;
+        checkbox.addEventListener("change", function () { toggleTask(task.id); });
+        item.querySelector(".task-text").textContent = task.text;
+        item.querySelector(".edit").addEventListener("click", function () { editTask(task.id); });
+        item.querySelector(".delete").addEventListener("click", function () { deleteTask(task.id); });
+        taskList.appendChild(item);
+    });
+
+    emptyState.hidden = filteredTasks.length !== 0;
     updateStats();
 }
 
 function toggleTask(id) {
-
-    tasks = tasks.map(function(task) {
-
-        if (task.id === id) {
-            task.completed = !task.completed;
-        }
-
+    tasks = tasks.map(function (task) {
+        if (task.id === id) task.completed = !task.completed;
         return task;
     });
-
     saveTasks();
-    displayTasks();
+    renderTasks();
 }
 
 function deleteTask(id) {
-
-    tasks = tasks.filter(function(task) {
-        return task.id !== id;
-    });
-
+    tasks = tasks.filter(function (task) { return task.id !== id; });
     saveTasks();
-    displayTasks();
+    renderTasks();
 }
 
 function editTask(id) {
-
-    const task = tasks.find(function(task) {
-        return task.id === id;
-    });
-
+    const task = tasks.find(function (item) { return item.id === id; });
     const newText = prompt("Edit your task:", task.text);
-
     if (newText !== null && newText.trim() !== "") {
-
         task.text = newText.trim();
-
         saveTasks();
-        displayTasks();
+        renderTasks();
     }
 }
 
-function searchTasks() {
-
-    const searchText =
-        document.getElementById("searchInput").value.toLowerCase();
-
-    const filteredTasks = tasks.filter(function(task) {
-
-        return task.text.toLowerCase().includes(searchText);
-
-    });
-
-    displayTasks(filteredTasks);
-}
-
 function updateStats() {
-
     const total = tasks.length;
-
-    const completed = tasks.filter(function(task) {
-        return task.completed;
-    }).length;
-
+    const completed = tasks.filter(function (task) { return task.completed; }).length;
     const pending = total - completed;
-
-    document.getElementById("total").textContent = total;
-    document.getElementById("completed").textContent = completed;
-    document.getElementById("pending").textContent = pending;
+    const percent = total ? Math.round((completed / total) * 100) : 0;
+    document.getElementById("progressLabel").textContent = `${percent}% done`;
+    document.getElementById("progressBar").style.width = `${percent}%`;
+    document.getElementById("pendingHeader").textContent = pending;
 }
 
 function saveTasks() {
-
     localStorage.setItem("tasks", JSON.stringify(tasks));
 }
 
-displayTasks();
+renderTasks();

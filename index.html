@@ -3,53 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>To-Do List</title>
+    <meta name="theme-color" content="#f5f1e8">
+    <title>Daymark | To-do list</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <div class="container">
-
-        <h1>𝕄𝕪 𝕋𝕠-𝔻𝕠 𝕃𝕚𝕤𝕥</h1>
-        <p class="subtitle">Stay organized and productive </p>
-
-        <!-- Add Task -->
-        <div class="input-box">
-            <input type="text" id="taskInput" placeholder="Enter your task...">
-            <button onclick="addTask()">Add</button>
-        </div>
-
-        <!-- Search -->
-        <input
-            type="text"
-            id="searchInput"
-            class="search"
-            placeholder="Search task..."
-            oninput="searchTasks()"
-        >
-
-        <!-- Statistics -->
-        <div class="stats">
-            <div>
-                <span id="total">0</span>
-                <small><b>Total</b></small>
+    <main class="app-shell">
+        <aside class="sidebar">
+            <div class="brand"><span class="brand-mark">D</span><span>daymark</span></div>
+            <div class="date-block">
+                <span class="eyebrow">YOUR SPACE</span>
+                <h1>Make today<br><em>count.</em></h1>
+                <p>Small steps, clearly marked.</p>
             </div>
+            <div class="sidebar-note"><span class="note-line"></span><p id="quote">Progress is a direction, not a speed.</p></div>
+            <div class="sidebar-footer">LOCAL &middot; PRIVATE &middot; YOURS</div>
+        </aside>
 
-            <div>
-                <span id="completed">0</span>
-                <small><b>Completed</b></small>
+        <section class="workspace">
+            <header class="topbar">
+                <div><span class="eyebrow">TODAY'S FOCUS</span><p id="currentDate" class="current-date"></p></div>
+                <div class="progress-wrap" aria-label="Daily progress"><span id="progressLabel">0% done</span><div class="progress-track"><span id="progressBar"></span></div></div>
+            </header>
+            <div class="heading-row">
+                <div><h2>Your tasks</h2><p class="subtitle">Clear the noise. Keep the important bits.</p></div>
+                <span class="task-count"><span id="pendingHeader">0</span> open</span>
             </div>
-
-            <div>
-                <span id="pending">0</span>
-                <small><b>Pending</b></small>
+            <form class="input-box" id="taskForm">
+                <span class="plus-icon">+</span><input type="text" id="taskInput" placeholder="What needs your attention?" autocomplete="off">
+                <button type="submit">Add task <span>&rarr;</span></button>
+            </form>
+            <div class="toolbar">
+                <label class="search-wrap" for="searchInput"><span>&#9906;</span><input type="search" id="searchInput" placeholder="Search tasks..." autocomplete="off"></label>
+                <div class="filters" role="group" aria-label="Filter tasks"><button class="filter active" data-filter="all">All</button><button class="filter" data-filter="active">Open</button><button class="filter" data-filter="completed">Done</button></div>
             </div>
-        </div>
+            <div class="list-heading"><span id="listLabel">ALL TASKS</span><span class="line"></span></div>
+            <ul id="taskList" aria-live="polite"></ul>
+            <div id="emptyState" class="empty-state" hidden><span class="empty-icon">&#10003;</span><strong>Nothing here yet</strong><p>Add a task and give your day a clear next move.</p></div>
+        </section>
+    </main>
 
-        <!-- Task List -->
-        <ul id="taskList"></ul>
-
-    </div>
+    <template id="taskTemplate"><li class="task"><label class="check-wrap"><input type="checkbox" class="check"><span class="custom-check"></span></label><span class="task-text"></span><div class="task-actions"><button class="edit" type="button" aria-label="Edit task">Edit</button><button class="delete" type="button" aria-label="Delete task">&times;</button></div></li></template>
 
     <script src="script.js"></script>
 </body>
